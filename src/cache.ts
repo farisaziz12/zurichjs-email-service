@@ -19,7 +19,7 @@ const cache = (duration: number): RequestHandler => {
     } else {
       // Override the res.json function to cache the response
       const jsonResponse = res.json
-      res.json = (body: any): Response => {
+      res.json = (body: unknown): Response => {
         // Cache the response body and convert duration to milliseconds
         mcache.put(key, body, duration * 1000)
         // Send the response to the client

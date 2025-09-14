@@ -11,13 +11,27 @@ type RoutingConfig = {
 
 export const routingConfig: RoutingConfig[] = [
   {
-    path: '/test', // Specifies the base path for this configuration
+    path: '/api/v1/email',
     routes: [
       {
-        path: '/test', // Specifies a specific route path under the base path
-        method: 'get', // Specifies that this route responds to HTTP GET requests
-        handler: 'test', // Specifies the name of the handler module/function for this route
-        cacheTime: 60 * 5, // Specifies a caching duration of 5 minutes (300 seconds) for this route
+        path: '/send',
+        method: 'post',
+        handler: 'email',
+      },
+      {
+        path: '/status/:idempotencyKey',
+        method: 'get',
+        handler: 'email',
+      },
+    ],
+  },
+  {
+    path: '/api/v1/health',
+    routes: [
+      {
+        path: '/',
+        method: 'get',
+        handler: 'email',
       },
     ],
   },

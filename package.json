@@ -6,6 +6,7 @@
   "author": "farisaziz12",
   "license": "MIT",
   "scripts": {
+    "prettier:fix": "prettier --write \"src/**/*.ts\"",
     "prebuild": "npm run lint && rimraf ./build",
     "build": "tsc -p ./tsconfig.json",
     "start": "node --enable-source-maps build/index.js",
@@ -19,16 +20,26 @@
     "test:report": "npm run test -- --output-file=out.tap && tap-mocha-reporter xunit < out.tap > junit-testresults.xml"
   },
   "dependencies": {
+    "@react-email/components": "^0.5.3",
+    "@react-email/render": "^1.2.3",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "jspdf": "^2.5.1",
     "memory-cache": "^0.2.0",
     "node-fetch": "^2.7.0",
+    "qrcode": "^1.5.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "resend": "^6.0.3",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@cspotcode/source-map-support": "^0.7.0",
     "@types/cors": "^2.8.17",
     "@types/node": "^17.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
     "@types/tap": "^15.0.5",
     "@typescript-eslint/eslint-plugin": "^5.7.0",
     "@typescript-eslint/parser": "^5.7.0",

@@ -16,11 +16,13 @@
     "noEmitHelpers": true,
     "removeComments": true,
     "newLine": "lf",
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "lib": [
       "esnext"
     ],
@@ -30,6 +32,7 @@
     ]
   },
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
   ]
 }

@@ -1,107 +1,351 @@
-# Typescript Microservice Template
+# ZurichJS Email Service
+
+A comprehensive email service built with TypeScript, Resend, and React Email for event platforms. This service provides beautiful, responsive email templates and idempotent email sending capabilities.
 
 ## Features
 
-* uses [esbuild](https://esbuild.github.io) and [`tsup`](https://tsup.egoist.sh) in dev mode for blazing fast builds and restarts
-* VS Code debugger configs in .vscode folder
-* recommended Dockerfile for secure Node.js production-ready images
-* most strict and backend specific [`tsconfig.json`](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) configuration
-* configured tests and reporters via [tap](https://node-tap.org)
-* [dotenv](https://github.com/motdotla/dotenv#readme) for development env vars
+- 🎯 **Event-focused email templates** - Ticket confirmations, event reminders, post-event recaps, and feedback requests
+- 🎨 **Beautiful design system** - Consistent, responsive email designs
+- 🔄 **Idempotent email sending** - Prevent duplicate emails with idempotency keys
+- ⚡ **Powered by Resend** - Reliable email delivery service
+- 📧 **React Email templates** - Modern, component-based email templates
+- 📄 **PDF Ticket Generation** - Automatic PDF ticket generation with QR codes for ticket-issued emails
+- 🔍 **QR Code Integration** - QR codes containing complete ticket and event information
+- 📝 **Comprehensive logging** - Detailed logging with email masking for privacy
+- 🌍 **Multi-provider support** - Generic design works with any event platform
+- 🛡️ **Type-safe** - Full TypeScript support with comprehensive type definitions
 
-## Getting Started
+## Quick Start
 
-### Start the development server
+### 1. Environment Setup
 
-```
-$ npm run dev
-```
+Copy the environment variables:
 
-## Included npm scripts
-The commands must be run from the project's root folder.
-
-### `dev`
-It runs the project in development mode. It uses [`tsup`](https://tsup.egoist.sh) to watch the `./src/**/*.ts` files, build and restart the server on save. It exposes the debugger on the default port (`9229`), ready to be used by the provided VS Code `attach` configuration. This script runs parallelly [esbuild](https://esbuild.github.io) and `tsc --noEmit` to build your code faster.
-```
-$ npm run dev
+```bash
+cp .env.example .env
 ```
 
-### `build`
-It builds for production all files from the `./src` to the `./build` folder. It uses `tsc` directly and therefore checks types too. It also emits the source maps.
-```
-$ npm run build
+Update your `.env` file:
+
+```env
+RESEND_API_KEY=your_resend_api_key_here
+FROM_EMAIL=noreply@yourdomain.com
+PORT=3000
+NODE_ENV=production
+LOG_LEVEL=INFO
 ```
 
-### `start`
-It runs previously built code from the `./build` folder. In addition, it uses `--enable-source-maps` flag for native source-maps support. Note: this flag is present in Node.js since version `12.12.x`.
-```
-$ npm run start
-```
-This script is included only for convenience to test the production build locally on your dev machine. If needed, `-r dotenv/config` can be add to load the dev env. It is advised to run Node.js binary directly to avoid any overhead or `sigterm` propagation issues in production.
-```
-$ node --enable-source-maps build/index.js
+### 2. Install Dependencies
+
+```bash
+npm install
 ```
 
-### `lint`
-It uses [`eslint`](https://eslint.org) and [`prettier`](https://prettier.io) to lint the code. It checks `./src` and `./test` folders. Note: `prettier` is run as `eslint` plugin via [`eslint-plugin-prettier`](https://github.com/prettier/eslint-plugin-prettier).
-```
-$ npm run lint
-```
-If you want to fix all of the fixable problems, run
-```
-$ npm run lint -- --fix
-```
+### 3. Run the Service
 
-### `update`
-It uses [npm-check](https://www.npmjs.com/package/npm-check) to help you upgrading your dependencies and never have any outdated and broken packages again.
-```
-$ npm run update
+```bash
+# Development
+npm run dev
+
+# Production
+npm run build
+npm start
 ```
 
-### `test`
-It uses [`tap`](https://node-tap.org) to run tests. Since version 15 `tap` needs `ts-node` to run TS files, `Stampo` also includes it.
+## API Endpoints
+
+### Send Email
+
+**POST** `/api/v1/email/send`
+
+Send an email using one of the predefined templates.
+
+#### Ticket Issued Template
+
+**Request Body:**
+```json
+{
+  "template": "ticket-issued",
+  "to": "user@example.com",
+  "idempotencyKey": "ticket-issued-12345",
+  "data": {
+    "event": {
+      "eventProvider": "ZurichJS",
+      "eventId": "event-123",
+      "eventName": "React Workshop",
+      "eventDate": "2024-12-15",
+      "eventTime": "18:00",
+      "eventLocation": "Zurich Tech Hub",
+      "organizerName": "ZurichJS Team",
+      "organizerEmail": "hello@zurichjs.ch",
+      "eventUrl": "https://zurichjs.ch/events/react-workshop",
+      "logoUrl": "https://zurichjs.ch/logo.png",
+      "brandColor": "#0070f3"
+    },
+    "user": {
+      "userId": "user-123",
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "fullName": "John Doe"
+    },
+    "ticket": {
+      "ticketId": "TKT-789",
+      "ticketType": "General Admission",
+      "ticketPrice": 25.00,
+      "currency": "CHF",
+      "qrCodeUrl": "https://example.com/qr/TKT-789",
+      "ticketUrl": "https://zurichjs.ch/tickets/TKT-789",
+      "seatNumber": "A-15",
+      "section": "Main Hall"
+    },
+    "orderNumber": "ORD-456",
+    "orderDate": "2024-12-01",
+    "totalAmount": 25.00,
+    "currency": "CHF"
+  }
+}
 ```
-$ npm run test
+
+#### Upcoming Event Template
+
+**Request Body:**
+```json
+{
+  "template": "upcoming-event",
+  "to": "user@example.com",
+  "idempotencyKey": "upcoming-event-12345",
+  "data": {
+    "event": {
+      "eventProvider": "ZurichJS",
+      "eventId": "event-123",
+      "eventName": "React Workshop",
+      "eventDate": "2024-12-15",
+      "eventTime": "18:00",
+      "eventLocation": "Zurich Tech Hub",
+      "organizerName": "ZurichJS Team",
+      "organizerEmail": "hello@zurichjs.ch",
+      "eventUrl": "https://zurichjs.ch/events/react-workshop",
+      "logoUrl": "https://zurichjs.ch/logo.png",
+      "brandColor": "#0070f3"
+    },
+    "user": {
+      "userId": "user-123",
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "fullName": "John Doe"
+    },
+    "daysUntilEvent": 1,
+    "reminderType": "day",
+    "eventDetails": "Join us for an interactive React workshop covering hooks, state management, and best practices. Bring your laptop and get ready to code!",
+    "actionItems": [
+      "Bring your laptop and charger",
+      "Install Node.js and npm",
+      "Create a GitHub account if you don't have one",
+      "Check the event location and parking options"
+    ]
+  }
+}
 ```
 
-### `test:watch`
-It runs `tap` in [watch mode](https://node-tap.org/docs/watch/) with interactive repl.
+#### Post Event Recap Template
+
+**Request Body:**
+```json
+{
+  "template": "post-event-recap",
+  "to": "user@example.com",
+  "idempotencyKey": "post-event-recap-12345",
+  "data": {
+    "event": {
+      "eventProvider": "ZurichJS",
+      "eventId": "event-123",
+      "eventName": "React Workshop",
+      "eventDate": "2024-12-15",
+      "eventTime": "18:00",
+      "eventLocation": "Zurich Tech Hub",
+      "organizerName": "ZurichJS Team",
+      "organizerEmail": "hello@zurichjs.ch",
+      "eventUrl": "https://zurichjs.ch/events/react-workshop",
+      "logoUrl": "https://zurichjs.ch/logo.png",
+      "brandColor": "#0070f3"
+    },
+    "user": {
+      "userId": "user-123",
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "fullName": "John Doe"
+    },
+    "eventSummary": "Thank you for joining us at the React Workshop! We had an amazing time exploring React hooks, state management patterns, and building interactive components together. The energy in the room was incredible, and we hope you learned something valuable.",
+    "highlightImages": [
+      "https://zurichjs.ch/images/workshop-1.jpg",
+      "https://zurichjs.ch/images/workshop-2.jpg",
+      "https://zurichjs.ch/images/workshop-3.jpg"
+    ],
+    "nextEvents": [
+      {
+        "eventId": "event-124",
+        "eventName": "Vue.js Meetup",
+        "eventDate": "2024-12-22",
+        "eventUrl": "https://zurichjs.ch/events/vue-meetup"
+      },
+      {
+        "eventId": "event-125",
+        "eventName": "TypeScript Deep Dive",
+        "eventDate": "2025-01-05",
+        "eventUrl": "https://zurichjs.ch/events/typescript-deep-dive"
+      }
+    ],
+    "speakerHighlights": [
+      {
+        "name": "Sarah Johnson",
+        "topic": "Advanced React Patterns",
+        "image": "https://zurichjs.ch/speakers/sarah-johnson.jpg"
+      },
+      {
+        "name": "Mike Chen",
+        "topic": "State Management with Zustand",
+        "image": "https://zurichjs.ch/speakers/mike-chen.jpg"
+      }
+    ]
+  }
+}
 ```
-$ npm run test:watch
+
+#### Feedback Template
+
+**Request Body:**
+```json
+{
+  "template": "feedback",
+  "to": "user@example.com",
+  "idempotencyKey": "feedback-12345",
+  "data": {
+    "event": {
+      "eventProvider": "ZurichJS",
+      "eventId": "event-123",
+      "eventName": "React Workshop",
+      "eventDate": "2024-12-15",
+      "eventTime": "18:00",
+      "eventLocation": "Zurich Tech Hub",
+      "organizerName": "ZurichJS Team",
+      "organizerEmail": "hello@zurichjs.ch",
+      "eventUrl": "https://zurichjs.ch/events/react-workshop",
+      "logoUrl": "https://zurichjs.ch/logo.png",
+      "brandColor": "#0070f3"
+    },
+    "user": {
+      "userId": "user-123",
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "fullName": "John Doe"
+    },
+    "feedbackUrl": "https://zurichjs.ch/feedback/event-123",
+    "incentive": "Complete the survey and get 10% off your next event ticket!",
+    "surveyEstimatedTime": 5
+  }
+}
 ```
 
-### `test:report`
-It runs tests and reports the results in the widely used `junit` format using [`tap-mocha-reporter`](https://www.npmjs.com/package/tap-mocha-reporter). The default `xunit` reporter can be changed to anyone from the [supported reporters list](https://node-tap.org/docs/reporting/). This command is mainly intended to be used in CI/CD environments. The generated `junit-testresults.xml` can be consumed by automatic reporting systems.
-
-## Env Vars
-`Stampo` includes [dotenv](https://github.com/motdotla/dotenv#readme). You have to rename `.env.example` to `.env` and put your variables inside it. They will be automatically loaded when running `$ npm run dev` script.
-
-## External typings augmentation
-`Stampo` is configured to allow you to extend typings of external packages using `./typings` folder. The logic behind it is based on [this](https://www.typescriptlang.org/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) official template. To augment a module, create a folder with the same module name you are augmenting and add an `index.d.ts` file inside it. [Here](https://github.com/fox1t/fastify-websocket-router/tree/master/typings/fastify) you can find a real-world example.
-
-## Debugging Steps
-
-* run the `dev` script to start your application (`$ npm run dev`)
-* either
-  * use the VS Code included `attach` config for the best debugging experience
-  <img width="327" alt="image" src="https://user-images.githubusercontent.com/1620916/129894966-15385c33-da0c-4e00-9f6f-a8ddf966e63e.png">
-
-  * use the provided debug URL in Chrome
-
-## Docker Support
-
-`Stampo` provides a `Dockerfile` that follows the best practices regarding Node.js containerized applications.
-* the application is run using a dedicated non-root user
-* the Dockerfile uses a dedicated build step
-
-
-### Build your docker image
-```
-docker build -t my-project-name .
+**Response (for all templates):**
+```json
+{
+  "success": true,
+  "messageId": "resend-message-id",
+  "idempotencyKey": "unique-key-12345"
+}
 ```
 
-### Run your docker container
+### Check Email Status
 
+**GET** `/api/v1/email/status/:idempotencyKey`
+
+Check if an email was already sent using the idempotency key.
+
+**Example Request:**
+```bash
+GET /api/v1/email/status/ticket-issued-12345
 ```
-docker run -p PORT:PORT my-project-name
+
+**Response:**
+```json
+{
+  "success": true,
+  "sent": true,
+  "messageId": "resend-message-id",
+  "idempotencyKey": "ticket-issued-12345"
+}
 ```
+
+### Health Check
+
+**GET** `/api/v1/health`
+
+Check service health status.
+
+**Example Request:**
+```bash
+GET /api/v1/health
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Email service is running",
+  "timestamp": "2024-12-01T10:30:00.000Z",
+  "version": "1.0.0"
+}
+```
+
+## Email Templates
+
+### 1. Ticket Issued (`ticket-issued`)
+Sent when a ticket is successfully purchased. **Automatically includes a PDF attachment with QR code containing complete ticket and event information.**
+
+**PDF Features:**
+- Professional ticket layout with event branding
+- QR code containing JSON data with ticket details
+- Event information, seat details, and verification data
+- Print-ready format for physical ticket presentation
+- Fallback to simple PDF if QR code generation fails
+
+### 2. Upcoming Event (`upcoming-event`)
+Sent as event reminders (1 week, 1 day, or 1 hour before).
+
+### 3. Post-Event Recap (`post-event-recap`)
+Sent after an event to thank attendees and share highlights.
+
+### 4. Feedback Request (`feedback`)
+Sent to collect feedback after an event.
+
+## Development
+
+### Scripts
+
+```bash
+# Development with hot reload
+npm run dev
+
+# Type checking
+npm run check:types
+
+# Linting
+npm run lint
+
+# Build for production
+npm run build
+
+# Run production server
+npm start
+
+# Run tests
+npm test
+```
+
+## License
+
+MIT License - see LICENSE file for details.
